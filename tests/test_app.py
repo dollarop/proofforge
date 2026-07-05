@@ -12,6 +12,40 @@ def test_health() -> None:
     response = TestClient(app).get("/api/health")
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert "default-src 'self'" in response.headers["content-security-policy"]
+
+
+def test_readiness_reports_demo_without_exposing_secrets(monkeypatch) -> None:
+    for name in LiveCampaignEngine.required_env:
+        monkeypatch.delenv(name, raising=False)
+    payload = TestClient(app).get("/api/readiness").json()
+    assert payload["demo_pipeline"] is True
+    assert payload["live_pipeline"] is False
+    assert payload["missing_live_configuration"] == list(LiveCampaignEngine.required_env)
+
+
+def test_campaign_api_rejects_invalid_and_returns_verified_assets() -> None:
+    client = TestClient(app)
+    invalid = client.post("/api/campaigns", json={"product": "x"})
+    assert invalid.status_code == 422
+
+    response = client.post(
+        "/api/campaigns",
+        json={
+            "product": "ProofForge",
+            "audience": "creative teams",
+            "promise": "Generate campaign media with verifiable provenance",
+            "tone": "clear",
+            "format": "square",
+            "variants": 3,
+        },
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["verified"] is True
+    assert len(payload["assets"]) == 3
+    assert all(len(asset["sha256"]) == 64 for asset in payload["assets"])
 
 
 def test_demo_campaign_has_verified_manifest(tmp_path: Path) -> None:

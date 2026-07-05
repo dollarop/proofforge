@@ -14,6 +14,7 @@ Creative teams need to know which model, prompt, parameters, and evaluation prod
 - SHA-256 verification for every output asset.
 - Quality score and accessibility alt text per variant.
 - Responsive FastAPI application with no frontend build step.
+- Production security headers and a credential-safe readiness endpoint.
 
 ## Run locally
 
