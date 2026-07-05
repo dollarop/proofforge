@@ -1,0 +1,23 @@
+[project]
+name = "proofforge"
+version = "0.1.0"
+description = "Provenance-first generative campaign packs powered by Genblaze and Backblaze B2"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "genblaze-core>=0.3.2,<0.5",
+  "genblaze-s3>=0.3.2,<0.5",
+  "pillow>=11,<13",
+  "python-multipart>=0.0.20,<1",
+  "uvicorn[standard]>=0.34,<1",
+]
+
+[project.optional-dependencies]
+dev = ["httpx>=0.28,<1", "pytest>=8,<9"]
+gmicloud = ["genblaze-gmicloud>=0.3.2,<0.5"]
+
+[tool.setuptools]
+packages = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

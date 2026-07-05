@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ProofForge</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">ProofForge</a>
+    <div class="status"><span class="status-dot"></span> Provenance enabled</div>
+  </header>
+
+  <main>
+    <section class="workspace">
+      <aside class="brief-panel">
+        <div class="section-heading">
+          <p class="eyebrow">Campaign brief</p>
+          <h1>Generate assets you can prove.</h1>
+          <p>Every variant carries a hash-bound Genblaze manifest and a durable storage path.</p>
+        </div>
+
+        <form id="campaign-form">
+          <label>Product<input name="product" value="ClearPath" required maxlength="80"></label>
+          <label>Audience<input name="audience" value="independent creative teams" required maxlength="160"></label>
+          <label>Core promise<textarea name="promise" required maxlength="240">Turn one clear brief into campaign-ready media with verifiable provenance.</textarea></label>
+
+          <fieldset>
+            <legend>Tone</legend>
+            <div class="segments">
+              <label><input type="radio" name="tone" value="clear" checked><span>Clear</span></label>
+              <label><input type="radio" name="tone" value="bold"><span>Bold</span></label>
+              <label><input type="radio" name="tone" value="warm"><span>Warm</span></label>
+              <label><input type="radio" name="tone" value="playful"><span>Playful</span></label>
+            </div>
+          </fieldset>
+
+          <label>Format
+            <select name="format">
+              <option value="square">Square 1:1</option>
+              <option value="portrait">Portrait 4:5</option>
+              <option value="landscape">Landscape 16:9</option>
+            </select>
+          </label>
+
+          <button id="generate" type="submit"><span>Generate campaign pack</span><span aria-hidden="true">→</span></button>
+        </form>
+      </aside>
+
+      <section class="results-panel" aria-live="polite">
+        <div class="results-header">
+          <div><p class="eyebrow">Generated variants</p><h2 id="result-title">Ready for a brief</h2></div>
+          <div id="integrity" class="integrity hidden"></div>
+        </div>
+        <div id="empty" class="empty-state">
+          <div class="empty-mark">PF</div>
+          <p>Your evaluated variants will appear here with their integrity records.</p>
+        </div>
+        <div id="gallery" class="gallery"></div>
+        <footer id="manifest" class="manifest hidden"></footer>
+      </section>
+    </section>
+  </main>
+  <script src="/assets/app.js"></script>
+</body>
+</html>
+
