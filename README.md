@@ -25,6 +25,13 @@ python -m venv .venv
 
 Open `http://127.0.0.1:8000`.
 
+## Deploy
+
+The repository includes a production `Dockerfile` and a free-tier Render Blueprint. The
+service binds to `$PORT`, exposes `/api/health`, and stores disposable demo runs under
+`/tmp/proofforge`. Live credentials must be configured as secret environment variables,
+never committed to the repository.
+
 ## Architecture
 
 1. The API validates a structured campaign brief.

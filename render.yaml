@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: proofforge
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: PROOFFORGE_MODE
+        value: demo
+      - key: PROOFFORGE_DATA_DIR
+        value: /tmp/proofforge
+
