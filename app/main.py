@@ -49,20 +49,20 @@ def health() -> dict[str, str | bool]:
     return {
         "status": "ok",
         "mode": "live" if os.getenv("PROOFFORGE_MODE") == "live" else "demo",
-        "b2_configured": all(
-            os.getenv(name) for name in ("B2_KEY_ID", "B2_APP_KEY", "B2_BUCKET")
-        ),
+        "b2_configured": CampaignEngine.b2_configured(),
     }
 
 
 @app.get("/api/readiness")
 def readiness() -> dict[str, str | bool | list[str]]:
     live = LiveCampaignEngine.configured()
+    b2 = CampaignEngine.b2_configured()
     return {
         "status": "ready",
         "demo_pipeline": True,
         "live_pipeline": live,
-        "storage": "b2" if live else "local-ephemeral",
+        "b2_pipeline": b2,
+        "storage": "b2" if b2 else "local-ephemeral",
         "missing_live_configuration": [
             name for name in LiveCampaignEngine.required_env if not os.getenv(name)
         ],

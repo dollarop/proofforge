@@ -22,6 +22,7 @@ def test_readiness_reports_demo_without_exposing_secrets(monkeypatch) -> None:
     payload = TestClient(app).get("/api/readiness").json()
     assert payload["demo_pipeline"] is True
     assert payload["live_pipeline"] is False
+    assert payload["b2_pipeline"] is False
     assert payload["missing_live_configuration"] == list(LiveCampaignEngine.required_env)
 
 
@@ -70,3 +71,9 @@ def test_live_engine_requires_all_credentials(monkeypatch) -> None:
     for name in LiveCampaignEngine.required_env:
         monkeypatch.delenv(name, raising=False)
     assert LiveCampaignEngine.configured() is False
+
+
+def test_b2_mode_requires_scoped_storage_credentials(monkeypatch) -> None:
+    for name in ("B2_KEY_ID", "B2_APP_KEY", "B2_BUCKET"):
+        monkeypatch.delenv(name, raising=False)
+    assert CampaignEngine.b2_configured() is False

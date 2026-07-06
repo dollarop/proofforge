@@ -9,7 +9,16 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
-from genblaze_core import Manifest, Modality, RunBuilder, StepBuilder, StepStatus
+from genblaze_core import (
+    KeyStrategy,
+    Manifest,
+    Modality,
+    ObjectStorageSink,
+    RunBuilder,
+    StepBuilder,
+    StepStatus,
+)
+from genblaze_s3 import S3StorageBackend
 from PIL import Image, ImageDraw, ImageFont
 
 from .models import AssetView, CampaignRequest, CampaignView
@@ -82,6 +91,7 @@ class CampaignEngine:
 
         run = run_builder.build()
         manifest = Manifest.from_run(run)
+        storage = self._persist_to_b2(run, manifest)
         manifest_path = run_dir / "manifest.json"
         manifest_path.write_text(manifest.to_canonical_json(), encoding="utf-8")
 
@@ -114,12 +124,31 @@ class CampaignEngine:
             run_id=run_id,
             status="complete",
             mode=mode,
-            storage="local",
+            storage=storage,
             manifest_url=f"/media/runs/{run_id}/manifest.json",
             manifest_hash=manifest.canonical_hash,
             verified=manifest.verify(),
             assets=assets,
         )
+
+    @staticmethod
+    def b2_configured() -> bool:
+        return all(os.getenv(name) for name in ("B2_KEY_ID", "B2_APP_KEY", "B2_BUCKET"))
+
+    def _persist_to_b2(self, run, manifest) -> str:
+        if not self.b2_configured():
+            return "local"
+        backend = S3StorageBackend.for_backblaze(
+            os.environ["B2_BUCKET"],
+            region=os.getenv("B2_REGION", "us-west-004"),
+        )
+        with ObjectStorageSink(
+            backend,
+            prefix="proofforge",
+            key_strategy=KeyStrategy.HIERARCHICAL,
+        ) as sink:
+            sink.write_run(run, manifest)
+        return "b2"
 
     def _render_variant(
         self, request: CampaignRequest, run_dir: Path, index: int

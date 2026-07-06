@@ -15,6 +15,8 @@ Creative teams need to know which model, prompt, parameters, and evaluation prod
 - Quality score and accessibility alt text per variant.
 - Responsive FastAPI application with no frontend build step.
 - Production security headers and a credential-safe readiness endpoint.
+- Credential-driven B2 mode that persists locally generated assets and canonical Genblaze
+  manifests without requiring a paid inference provider.
 
 ## Run locally
 
